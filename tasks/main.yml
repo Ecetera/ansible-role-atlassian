@@ -1,0 +1,28 @@
+---
+- name: "Create DB {{product}}"
+  postgresql_db:
+    name: "{{product}}"
+    encoding: UTF8
+  delegate_to: "{{ database_server }}"
+
+- name: Create DB user {{product}}
+  postgresql_user:
+    name: "{{product}}"
+    db: "{{product}}"
+    password: $PASSWORD(../../clients/$client_shortname/credentials/{{client_environment}}/{{product}}/database)
+ delegate_to: "{{ database_server }}"
+
+
+- name: "Download {{product}}"
+  get_url:
+    url: "{{url}}"
+    dest: "/var/tmp/{{installer}}"
+    mode: 0644
+
+- template:
+    src: templates/response.varfile.j2
+    dest: "/var/tmp/{{product}}-response.varfile"
+
+- command: "/var/tmp/{{installer}} -q -varfile /var/tmp/{{product}-response.varfile"
+  args:
+    creates: "/opt/atlassian/{{product}}"

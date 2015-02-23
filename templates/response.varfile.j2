@@ -1,0 +1,12 @@
+#install4j response file for {{product}} {{version}}
+#{{ansible_managed}}
+rmiPort$Long={{ rmiPort }}
+app.{{ product }}Home=/var/atlassian/application-data/{{ product }}
+app.install.service$Boolean=true
+existingInstallationDir=/opt/atlassian/{{ product }}
+sys.confirmedUpdateInstallationString=false
+sys.languageId=en
+sys.installationDir=/opt/atlassian/{{ product }}
+executeLauncherAction$Boolean=true
+httpPort$Long={{ httpPort }}
+portChoice=default

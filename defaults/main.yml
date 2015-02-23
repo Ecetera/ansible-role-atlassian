@@ -1,0 +1,9 @@
+---
+atlassian_products: ['jira','confluence','stash']
+database_server: localhost
+version: 6.3.15
+product: jira
+rmiPort: 8005
+httpPort: 8080
+installer: "atlassian-{{product}}-{{version}}-x64.bin"
+url: "http://www.atlassian.com/software/{{product}}/downloads/binary/{{installer}}"
