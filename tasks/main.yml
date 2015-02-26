@@ -1,28 +1,49 @@
 ---
 - name: "Create DB {{product}}"
+  sudo: true
+  sudo_user: postgres
   postgresql_db:
     name: "{{product}}"
     encoding: UTF8
-  delegate_to: "{{ database_server }}"
 
 - name: Create DB user {{product}}
+  sudo: true
+  sudo_user: postgres
   postgresql_user:
     name: "{{product}}"
     db: "{{product}}"
-    password: $PASSWORD(../../clients/$client_shortname/credentials/{{client_environment}}/{{product}}/database)
- delegate_to: "{{ database_server }}"
-
+    password: password
 
 - name: "Download {{product}}"
   get_url:
     url: "{{url}}"
     dest: "/var/tmp/{{installer}}"
-    mode: 0644
+    mode: 0744
 
 - template:
-    src: templates/response.varfile.j2
+    src: response.varfile.j2
     dest: "/var/tmp/{{product}}-response.varfile"
 
-- command: "/var/tmp/{{installer}} -q -varfile /var/tmp/{{product}-response.varfile"
+- command: "/var/tmp/{{installer}} -q -varfile /var/tmp/{{product}}-response.varfile"
   args:
     creates: "/opt/atlassian/{{product}}"
+
+- name: Ensure systemd service template
+  template:
+    src: systemd.service.j2
+    dest: "/usr/lib/systemd/system/atlassian-{{product}}.service"
+
+- name: Ensure service is configured and enabled
+  service:
+    name: "atlassian-{{product}}"
+    state: started
+    enabled: yes
+
+- name: ensure ports are open with firewalld
+  firewalld:
+    port: "{{ item }}/tcp"
+    permanent: true
+    state: enabled
+  with_items:
+    - "{{httpPort}}"
+  notify: restart firewalld

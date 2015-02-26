@@ -1,0 +1,5 @@
+---
+- name: "restart {{product}}"
+  service:
+    name: "atlassian-{{product}}"
+    state: restarted

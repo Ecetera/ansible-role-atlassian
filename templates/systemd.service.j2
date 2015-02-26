@@ -1,0 +1,15 @@
+# {{ansible_managed }}
+[Unit]
+Description=Atlassian {{ product }} Service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User={{ product }}
+Group={{ product }}
+Environment=JAVA_HOME={{ java_home_path }}
+ExecStart=/opt/atlassian/{{ product }}/bin/start-{{ product }}.sh
+ExecStop=/opt/atlassian/{{ product }}/bin/stop-{{ product }}.sh
+
+[Install]
+WantedBy=multi-user.target
